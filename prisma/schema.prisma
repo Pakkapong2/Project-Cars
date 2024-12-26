@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Car {
+  id            Int       @id @default(autoincrement())
+  brand         String
+  model         String
+  license_plate String    @unique
+  price_per_day Int
+  availability  Boolean @default(true)
+  picture String?
+  location      String
+  bookings      Booking[] // Relation to Booking
+  
+}
+
+model User {
+  id          Int       @id @default(autoincrement())
+  username    String
+  password    String
+  name        String
+  lastname    String
+  email       String
+  address     String
+  tel         String
+  picture     String?
+  userTypeId  Int        // Foreign Key to UserType
+  userType    UserType   @relation(fields: [userTypeId], references: [id])
+  bookings    Booking[]  // Relation to Booking
+}
+
+model UserType {
+  id          Int       @id @default(autoincrement())
+  name        String
+  users       User[]    // Relation back to User
+}
+
+model Booking {
+  id          Int       @id @default(autoincrement())
+  userId      Int       // Foreign Key to User
+  carId       Int       // Foreign Key to Car
+  bookingDate DateTime
+  returnDate  DateTime
+  user        User      @relation(fields: [userId], references: [id])
+  car         Car       @relation(fields: [carId], references: [id])
+}
